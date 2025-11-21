@@ -2,8 +2,10 @@
 
 import { motion } from "framer-motion";
 import { Play } from "lucide-react";
+import { useState } from "react";
 
 export default function Hero() {
+    const [playing, setPlaying] = useState(false)
   return (
     <section className="relative min-h-screen flex items-center justify-center text-center flex-col pt-20 overflow-hidden bg-white">
       {/* Subtle Background Pattern */}
@@ -94,12 +96,24 @@ export default function Hero() {
             <div className="relative rounded-2xl overflow-hidden shadow-sm border border-gray-200 bg-gray-100">
               <div className="aspect-video bg-gray-200 flex items-center justify-center group cursor-pointer">
                 {/* Placeholder for video */}
-                <motion.div
-                  whileHover={{ scale: 1.1 }}
-                  className="relative z-10 w-20 h-20 bg-black rounded-full flex items-center justify-center shadow-sm group-hover:shadow-lg transition-all"
-                >
-                  <Play className="w-8 h-8 text-white ml-1" />
-                </motion.div>
+               {!playing ? (
+        <motion.div
+          whileHover={{ scale: 1.1 }}
+          className="relative z-10 w-20 h-20 bg-black rounded-full flex items-center justify-center shadow-sm transition-all cursor-pointer"
+          onClick={() => setPlaying(true)}
+        >
+          <Play className="w-8 h-8 text-white ml-1" />
+        </motion.div>
+      ) : (
+        <video
+          className="w-full h-full rounded-xl"
+          controls
+          autoPlay
+        >
+          <source src="/5.mp4" type="video/mp4" />
+          Your browser does not support the video tag.
+        </video>
+      )}
                 
                 {/* Sample text overlay */}
                 <div className="absolute bottom-6 left-6 right-6 text-left">
