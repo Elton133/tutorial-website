@@ -28,6 +28,22 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    // Check if user has already purchased this video
+    const { data: existingPurchase } = await supabase
+      .from('purchases')
+      .select('*')
+      .eq('user_id', user.id)
+      .eq('video_id', video_id)
+      .eq('payment_status', 'success')
+      .single();
+
+    if (existingPurchase) {
+      return NextResponse.json(
+        { error: 'You have already purchased this video' },
+        { status: 400 }
+      );
+    }
+
     // Generate unique reference
     const reference = `TXN_${Date.now()}_${user.id.slice(0, 8)}`;
 
@@ -42,6 +58,13 @@ export async function POST(request: NextRequest) {
 
     if (purchaseError) {
       console.error('Error creating purchase:', purchaseError);
+      // Check if it's a duplicate key error
+      if (purchaseError.code === '23505') {
+        return NextResponse.json(
+          { error: 'You have already purchased this video' },
+          { status: 400 }
+        );
+      }
       return NextResponse.json(
         { error: 'Failed to create purchase record' },
         { status: 500 }
