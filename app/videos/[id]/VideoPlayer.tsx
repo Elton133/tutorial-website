@@ -64,6 +64,20 @@ export default function VideoPlayerPage({ videoId }: VideoPlayerProps) {
       if (videoError) throw videoError;
       setVideo(videoData);
 
+      // Check if user is admin
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('is_admin')
+        .eq('id', user.id)
+        .single();
+
+      // Admins have access to all videos
+      if (profile?.is_admin) {
+        setHasAccess(true);
+        setLoading(false);
+        return;
+      }
+
       // Check if user has purchased this video
       const { data: purchase } = await supabase
         .from('purchases')
@@ -136,10 +150,10 @@ export default function VideoPlayerPage({ videoId }: VideoPlayerProps) {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
+      <div className="min-h-screen flex items-center justify-center bg-white">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600 dark:text-gray-400">Loading...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-black mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading...</p>
         </div>
       </div>
     );
@@ -147,12 +161,12 @@ export default function VideoPlayerPage({ videoId }: VideoPlayerProps) {
 
   if (error || !video) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
+      <div className="min-h-screen flex items-center justify-center bg-white">
         <div className="text-center">
-          <p className="text-red-600 dark:text-red-400">{error || 'Video not found'}</p>
+          <p className="text-red-600">{error || 'Video not found'}</p>
           <button
             onClick={() => router.push('/')}
-            className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+            className="mt-4 px-4 py-2 bg-black text-white rounded-md shadow-sm hover:bg-gray-800"
           >
             Go Back
           </button>
@@ -162,10 +176,10 @@ export default function VideoPlayerPage({ videoId }: VideoPlayerProps) {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="min-h-screen bg-white">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Video Player or Payment Prompt */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden">
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
           <div className="aspect-video bg-black">
             {hasAccess ? (
               <ReactPlayer
@@ -203,20 +217,20 @@ export default function VideoPlayerPage({ videoId }: VideoPlayerProps) {
 
           {/* Video Details */}
           <div className="p-6">
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
+            <h1 className="text-3xl font-bold text-black mb-4">
               {video.title}
             </h1>
-            <p className="text-gray-600 dark:text-gray-400 mb-6">
+            <p className="text-gray-600 mb-6">
               {video.description}
             </p>
 
             <div className="flex items-center justify-between mb-6">
               <div>
-                <span className="text-3xl font-bold text-blue-600 dark:text-blue-400">
+                <span className="text-3xl font-bold text-black">
                   ₦{(video.price / 100).toLocaleString()}
                 </span>
                 {video.duration && (
-                  <span className="ml-4 text-sm text-gray-500 dark:text-gray-400">
+                  <span className="ml-4 text-sm text-gray-500">
                     Duration: {Math.floor(video.duration / 60)} minutes
                   </span>
                 )}
@@ -225,7 +239,7 @@ export default function VideoPlayerPage({ videoId }: VideoPlayerProps) {
                 <button
                   onClick={handlePayment}
                   disabled={paying}
-                  className="px-6 py-3 bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
+                  className="px-6 py-3 bg-black text-white font-semibold rounded-md shadow-sm hover:bg-gray-800 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
                 >
                   {paying ? 'Processing...' : 'Purchase Now'}
                 </button>
@@ -233,8 +247,8 @@ export default function VideoPlayerPage({ videoId }: VideoPlayerProps) {
             </div>
 
             {error && (
-              <div className="mt-4 p-4 bg-red-50 dark:bg-red-900/20 rounded-md">
-                <p className="text-red-800 dark:text-red-400">{error}</p>
+              <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-md shadow-sm">
+                <p className="text-red-800">{error}</p>
               </div>
             )}
           </div>
