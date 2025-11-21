@@ -12,7 +12,10 @@ const navLinks = [
 ];
 
 interface NavbarProps {
-  user?: any;
+  user?: {
+    id: string;
+    email?: string;
+  } | null;
 }
 
 export default function Navbar({ user }: NavbarProps) {

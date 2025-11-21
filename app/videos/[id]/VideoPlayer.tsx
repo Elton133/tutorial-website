@@ -8,10 +8,21 @@ import { Video } from '@/lib/types';
 import type { ComponentType } from 'react';
 
 // Dynamically import ReactPlayer to avoid SSR issues
+// Note: Using a minimal type definition for the props we use.
+// Full ReactPlayerProps has many more options, but dynamic import complicates type imports.
 const ReactPlayer = dynamic(() => import('react-player'), { 
   ssr: false,
   loading: () => <div className="w-full h-full flex items-center justify-center">Loading player...</div>
-}) as ComponentType<any>;
+}) as ComponentType<{
+  url: string;
+  controls?: boolean;
+  width?: string;
+  height?: string;
+  playing?: boolean;
+  loop?: boolean;
+  muted?: boolean;
+  volume?: number;
+}>;
 
 interface VideoPlayerProps {
   videoId: string;

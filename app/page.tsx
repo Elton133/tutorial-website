@@ -70,6 +70,7 @@ export default async function Home() {
                       {video.description}
                     </p>
                     <div className="flex justify-between items-center pt-4 border-t border-gray-100">
+                      {/* Price in Ghana Cedis (stored as cents, divided by 100 for display) */}
                       <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
                         GH₵{(video.price / 100).toLocaleString()}
                       </span>
