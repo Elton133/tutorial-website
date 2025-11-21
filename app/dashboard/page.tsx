@@ -3,9 +3,17 @@ import Image from 'next/image';
 import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
 import { Video, Purchase } from '@/lib/types';
+import { LayoutDashboard, LogOut, User, Video as VideoIcon } from 'lucide-react';
 
 export default async function DashboardPage() {
   const supabase = await createClient();
+
+  const sidebarLinks = [
+  { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
+  { label: "My Videos", href: "/dashboard/videos", icon: VideoIcon },
+  { label: "Profile", href: "/dashboard/profile", icon: User },
+];
+
 
   // Get current user
   const {
@@ -34,62 +42,90 @@ export default async function DashboardPage() {
     .eq('id', user.id)
     .single();
 
-  return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      {/* Header */}
-      <header className="bg-white dark:bg-gray-800 shadow">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex justify-between items-center">
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-              My Dashboard
-            </h1>
-            <div className="flex gap-4">
+return (
+  <div className="min-h-screen flex bg-gray-50 dark:bg-gray-900">
+    {/* SIDEBAR */}
+    <aside className="hidden md:block w-64 bg-white dark:bg-gray-800 border-r dark:border-gray-700">
+      <div className="p-6">
+        <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-6">
+          Bouquet
+        </h2>
+
+        <nav className="space-y-2">
+          {sidebarLinks.map((link) => {
+            const Icon = link.icon;
+            const pathname = typeof window !== "undefined" ? window.location.pathname : "";
+            const isActive = pathname === link.href;
+
+            return (
               <Link
-                href="/"
-                className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 hover:text-gray-900 dark:hover:text-white"
+                key={link.href}
+                href={link.href}
+                className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
+                  isActive
+                    ? "bg-purple-600 text-white"
+                    : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                }`}
               >
-                Browse Videos
+                <Icon className="w-5 h-5" />
+                <span>{link.label}</span>
               </Link>
-              {profile?.is_admin && (
-                <Link
-                  href="/admin"
-                  className="px-4 py-2 text-sm font-medium text-white bg-purple-600 rounded-md hover:bg-purple-700"
-                >
-                  Admin Panel
-                </Link>
-              )}
-              <form action="/auth/signout" method="post">
-                <button
-                  type="submit"
-                  className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-red-700"
-                >
-                  Sign Out
-                </button>
-              </form>
-            </div>
-          </div>
+            );
+          })}
+
+          <form action="/auth/signout" method="post">
+            <button
+              type="submit"
+              className="w-full flex items-center gap-3 px-4 py-3 mt-4 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+            >
+              <LogOut className="w-5 h-5" />
+              <span>Logout</span>
+            </button>
+          </form>
+        </nav>
+      </div>
+    </aside>
+
+    {/* MAIN CONTENT */}
+    <div className="flex-1">
+      {/* Header */}
+      <header className="bg-white dark:bg-gray-800 shadow-sm sticky top-0 z-20">
+        <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+          <h1 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white">
+            Dashboard
+          </h1>
+
+          <Link
+            href="/"
+            className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 hover:text-gray-900 dark:hover:text-white"
+          >
+            Browse Videos
+          </Link>
         </div>
       </header>
 
-      {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        {/* User Info */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 mb-8">
+      {/* Page Content */}
+      <div className="max-w-7xl mx-auto px-6 py-10 space-y-10">
+        {/* User Info Card */}
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
           <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
             Account Information
           </h2>
+
           <div className="space-y-2">
             <p className="text-gray-600 dark:text-gray-400">
               <span className="font-medium">Email:</span> {user.email}
             </p>
+
             {profile?.full_name && (
               <p className="text-gray-600 dark:text-gray-400">
                 <span className="font-medium">Name:</span> {profile.full_name}
               </p>
             )}
+
             <p className="text-gray-600 dark:text-gray-400">
-              <span className="font-medium">Role:</span>{' '}
-              {profile?.is_admin ? 'Administrator' : 'User'}
+              <span className="font-medium">Role:</span>{" "}
+              {profile?.is_admin ? "Administrator" : "User"}
             </p>
           </div>
         </div>
@@ -99,17 +135,19 @@ export default async function DashboardPage() {
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
             My Purchased Videos
           </h2>
+
           {purchases && purchases.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {purchases.map((purchase: Purchase & { videos: Video }) => {
                 const video = purchase.videos;
+
                 return (
                   <Link
                     key={purchase.id}
                     href={`/videos/${video.id}`}
-                    className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow"
+                    className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow"
                   >
-                    <div className="aspect-video bg-gray-200 dark:bg-gray-700 flex items-center justify-center relative">
+                    <div className="aspect-video bg-gray-200 dark:bg-gray-700 relative">
                       {video.thumbnail_url ? (
                         <Image
                           src={video.thumbnail_url}
@@ -118,29 +156,28 @@ export default async function DashboardPage() {
                           className="object-cover"
                         />
                       ) : (
-                        <svg
-                          className="w-16 h-16 text-gray-400"
-                          fill="currentColor"
-                          viewBox="0 0 20 20"
-                        >
-                          <path d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" />
-                        </svg>
+                        <div className="flex items-center justify-center w-full h-full text-gray-500">
+                          No thumbnail
+                        </div>
                       )}
                     </div>
+
                     <div className="p-4">
                       <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
                         {video.title}
                       </h3>
+
                       <p className="text-sm text-gray-600 dark:text-gray-400 mb-2 line-clamp-2">
                         {video.description}
                       </p>
+
                       <div className="flex justify-between items-center text-sm">
                         <span className="text-green-600 dark:text-green-400 font-medium">
                           Purchased
                         </span>
                         {video.duration && (
                           <span className="text-gray-500 dark:text-gray-400">
-                            {Math.floor(video.duration / 60)}min
+                            {Math.floor(video.duration / 60)} min
                           </span>
                         )}
                       </div>
@@ -151,28 +188,15 @@ export default async function DashboardPage() {
             </div>
           ) : (
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-12 text-center">
-              <svg
-                className="mx-auto h-16 w-16 text-gray-400"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"
-                />
-              </svg>
-              <h3 className="mt-4 text-lg font-medium text-gray-900 dark:text-white">
+              <h3 className="text-lg font-medium text-gray-900 dark:text-white">
                 No videos purchased yet
               </h3>
               <p className="mt-2 text-gray-600 dark:text-gray-400">
-                Browse our collection to find videos you&apos;d like to learn from
+                Browse our collection to find videos you'd love to learn from.
               </p>
               <Link
                 href="/"
-                className="mt-6 inline-block px-6 py-3 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700"
+                className="mt-6 inline-block px-6 py-3 bg-purple-600 text-white font-medium rounded-md hover:bg-purple-700"
               >
                 Browse Videos
               </Link>
@@ -181,5 +205,7 @@ export default async function DashboardPage() {
         </div>
       </div>
     </div>
-  );
+  </div>
+);
+
 }
