@@ -24,14 +24,14 @@ export default function Navbar({ user }: NavbarProps) {
 
   return (
     <>
-      <nav className="fixed top-0 left-0 right-0 z-50 w-full flex items-center justify-between px-4 md:px-8 py-5 backdrop-blur-lg bg-white/80 border-b border-gray-100/50 shadow-sm">
+      <nav className="fixed top-0 left-0 right-0 z-50 w-full flex items-center justify-between px-4 md:px-8 py-5 backdrop-blur-lg bg-white/90 border-b border-gray-200 shadow-sm">
         {/* Left: Brand */}
         <Link href="/" className="flex items-center gap-3">
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5 }}
-            className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent"
+            className="text-2xl font-bold text-black"
           >
             Bouquet
           </motion.div>
@@ -48,10 +48,10 @@ export default function Navbar({ user }: NavbarProps) {
             >
               <Link
                 href={link.href}
-                className="relative text-gray-700 hover:text-blue-600 transition-colors group font-medium"
+                className="relative text-gray-700 hover:text-black transition-colors group font-medium"
               >
                 {link.label}
-                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-600 to-indigo-600 transition-all duration-300 group-hover:w-full"></span>
+                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-black transition-all duration-300 group-hover:w-full"></span>
               </Link>
             </motion.div>
           ))}
@@ -62,14 +62,14 @@ export default function Navbar({ user }: NavbarProps) {
             <>
               <Link
                 href="/dashboard"
-                className="hidden sm:flex items-center gap-2 text-gray-700 hover:text-blue-600 px-4 py-2 text-sm font-medium transition"
+                className="hidden sm:flex items-center gap-2 text-gray-700 hover:text-black px-4 py-2 text-sm font-medium transition"
               >
                 Dashboard
               </Link>
               <form action="/auth/signout" method="post">
                 <button
                   type="submit"
-                  className="hidden sm:flex items-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl px-6 py-2.5 text-sm font-semibold hover:shadow-lg hover:shadow-blue-500/30 transition-all"
+                  className="hidden sm:flex items-center gap-2 bg-black text-white rounded-xl px-6 py-2.5 text-sm font-semibold shadow-sm hover:bg-gray-800 transition-all"
                 >
                   Sign Out
                 </button>
@@ -79,13 +79,13 @@ export default function Navbar({ user }: NavbarProps) {
             <>
               <Link
                 href="/login"
-                className="hidden sm:flex items-center gap-2 text-gray-700 hover:text-blue-600 px-4 py-2 text-sm font-medium transition"
+                className="hidden sm:flex items-center gap-2 text-gray-700 hover:text-black px-4 py-2 text-sm font-medium transition"
               >
                 Sign in
               </Link>
               <Link
                 href="/signup"
-                className="hidden sm:flex items-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl px-6 py-2.5 text-sm font-semibold hover:shadow-lg hover:shadow-blue-500/30 transition-all"
+                className="hidden sm:flex items-center gap-2 bg-black text-white rounded-xl px-6 py-2.5 text-sm font-semibold shadow-sm hover:bg-gray-800 transition-all"
               >
                 Get Started
               </Link>
@@ -125,7 +125,7 @@ export default function Navbar({ user }: NavbarProps) {
               animate={{ y: 0 }}
               exit={{ y: "100%" }}
               transition={{ duration: 0.35, ease: "easeOut" }}
-              className="absolute bottom-0 left-0 right-0 bg-white rounded-t-3xl p-8 pt-12 shadow-xl"
+              className="absolute bottom-0 left-0 right-0 bg-white rounded-t-3xl p-8 pt-12 shadow-sm"
               onClick={(e) => e.stopPropagation()}
             >
               {/* Links */}
@@ -140,7 +140,7 @@ export default function Navbar({ user }: NavbarProps) {
                   >
                     <Link
                       href={link.href}
-                      className="text-2xl font-semibold text-gray-900 hover:text-blue-600 transition-colors"
+                      className="text-2xl font-semibold text-black hover:text-gray-700 transition-colors"
                       onClick={() => setMenuOpen(false)}
                     >
                       {link.label}
@@ -157,7 +157,7 @@ export default function Navbar({ user }: NavbarProps) {
                     >
                       <Link
                         href="/dashboard"
-                        className="text-2xl font-semibold text-gray-900 hover:text-blue-600 transition-colors"
+                        className="text-2xl font-semibold text-black hover:text-gray-700 transition-colors"
                         onClick={() => setMenuOpen(false)}
                       >
                         Dashboard
@@ -172,7 +172,7 @@ export default function Navbar({ user }: NavbarProps) {
                       <form action="/auth/signout" method="post" className="w-full">
                         <button
                           type="submit"
-                          className="w-full py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl font-semibold"
+                          className="w-full py-3 bg-black text-white rounded-xl font-semibold shadow-sm hover:bg-gray-800"
                         >
                           Sign Out
                         </button>
@@ -189,14 +189,14 @@ export default function Navbar({ user }: NavbarProps) {
                     >
                       <Link
                         href="/login"
-                        className="w-full py-3 text-center border border-blue-600 text-blue-600 rounded-xl font-semibold hover:bg-blue-50 transition"
+                        className="w-full py-3 text-center border border-black text-black rounded-xl font-semibold shadow-sm hover:bg-gray-50 transition"
                         onClick={() => setMenuOpen(false)}
                       >
                         Sign in
                       </Link>
                       <Link
                         href="/signup"
-                        className="w-full py-3 text-center bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl font-semibold"
+                        className="w-full py-3 text-center bg-black text-white rounded-xl font-semibold shadow-sm hover:bg-gray-800"
                         onClick={() => setMenuOpen(false)}
                       >
                         Get Started

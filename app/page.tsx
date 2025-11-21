@@ -21,7 +21,7 @@ export default async function Home() {
   } = await supabase.auth.getUser();
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50/30 to-purple-50/30">
+    <div className="min-h-screen bg-white">
       <Navbar user={user} />
       
       <Hero />
@@ -29,7 +29,7 @@ export default async function Home() {
       {/* Video Gallery Section */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
         <div className="text-center mb-12">
-          <h3 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+          <h3 className="text-3xl md:text-4xl font-bold text-black mb-4">
             Featured Tutorials
           </h3>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
@@ -42,7 +42,7 @@ export default async function Home() {
             {videos.map((video: Video) => (
               <Link key={video.id} href={`/videos/${video.id}`}>
                 <Card>
-                  <div className="aspect-video bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center relative overflow-hidden">
+                  <div className="aspect-video bg-gray-100 flex items-center justify-center relative overflow-hidden">
                     {video.thumbnail_url ? (
                       <Image
                         src={video.thumbnail_url}
@@ -63,16 +63,15 @@ export default async function Home() {
                     )}
                   </div>
                   <div className="p-6">
-                    <h4 className="text-xl font-bold text-gray-900 mb-2 line-clamp-1">
+                    <h4 className="text-xl font-bold text-black mb-2 line-clamp-1">
                       {video.title}
                     </h4>
                     <p className="text-sm text-gray-600 mb-4 line-clamp-2 leading-relaxed">
                       {video.description}
                     </p>
-                    <div className="flex justify-between items-center pt-4 border-t border-gray-100">
-                      {/* Price in Ghana Cedis (stored as cents, divided by 100 for display) */}
-                      <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-                        GH₵{(video.price / 100).toLocaleString()}
+                    <div className="flex justify-between items-center pt-4 border-t border-gray-200">
+                      <span className="text-2xl font-bold text-black">
+                        ₦{(video.price / 100).toLocaleString()}
                       </span>
                       {video.duration && (
                         <span className="text-sm text-gray-500 bg-gray-100 px-3 py-1 rounded-full">
@@ -87,7 +86,7 @@ export default async function Home() {
           </div>
         ) : (
           <div className="text-center py-20">
-            <div className="inline-block p-8 bg-white rounded-2xl shadow-sm border border-gray-100">
+            <div className="inline-block p-8 bg-white rounded-2xl shadow-sm border border-gray-200">
               <svg
                 className="w-16 h-16 text-gray-300 mx-auto mb-4"
                 fill="none"
@@ -109,7 +108,7 @@ export default async function Home() {
       </div>
 
       {/* Footer */}
-      <footer className="bg-white border-t border-gray-100 mt-20">
+      <footer className="bg-white border-t border-gray-200 mt-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <p className="text-center text-gray-500 text-sm">
             © 2024 Bouquet Tutorial Platform. All rights reserved.

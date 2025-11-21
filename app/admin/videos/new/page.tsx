@@ -115,37 +115,37 @@ export default function NewVideoPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-white py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-3xl mx-auto">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+          <h1 className="text-3xl font-bold text-black">
             Add New Video
           </h1>
-          <p className="mt-2 text-gray-600 dark:text-gray-400">
+          <p className="mt-2 text-gray-600">
             Upload a new video tutorial to the platform
           </p>
         </div>
 
         <form
           onSubmit={handleSubmit}
-          className="bg-white dark:bg-gray-800 shadow rounded-lg p-6 space-y-6"
+          className="bg-white shadow-sm border border-gray-200 rounded-lg p-6 space-y-6"
         >
           {error && (
-            <div className="rounded-md bg-red-50 dark:bg-red-900/20 p-4">
-              <p className="text-sm text-red-800 dark:text-red-400">{error}</p>
+            <div className="rounded-md bg-red-50 border border-red-200 p-4 shadow-sm">
+              <p className="text-sm text-red-800">{error}</p>
             </div>
           )}
 
           {uploading && (
-            <div className="rounded-md bg-blue-50 dark:bg-blue-900/20 p-4">
+            <div className="rounded-md bg-gray-50 border border-gray-200 p-4 shadow-sm">
               <div className="flex items-center justify-between mb-2">
-                <p className="text-sm text-blue-800 dark:text-blue-400">
+                <p className="text-sm text-gray-800">
                   Uploading... {uploadProgress}%
                 </p>
               </div>
-              <div className="w-full bg-blue-200 dark:bg-blue-900 rounded-full h-2">
+              <div className="w-full bg-gray-200 rounded-full h-2">
                 <div
-                  className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                  className="bg-black h-2 rounded-full transition-all duration-300"
                   style={{ width: `${uploadProgress}%` }}
                 ></div>
               </div>
@@ -155,7 +155,7 @@ export default function NewVideoPage() {
           <div>
             <label
               htmlFor="title"
-              className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+              className="block text-sm font-medium text-black"
             >
               Title *
             </label>
@@ -165,7 +165,7 @@ export default function NewVideoPage() {
               required
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-900 dark:text-white"
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-black focus:border-black bg-white text-black"
               placeholder="e.g., Rose Bouquet Basics"
             />
           </div>
@@ -173,7 +173,7 @@ export default function NewVideoPage() {
           <div>
             <label
               htmlFor="description"
-              className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+              className="block text-sm font-medium text-black"
             >
               Description *
             </label>
@@ -183,7 +183,7 @@ export default function NewVideoPage() {
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               rows={4}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-900 dark:text-white"
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-black focus:border-black bg-white text-black"
               placeholder="Describe what students will learn..."
             />
           </div>
@@ -191,7 +191,7 @@ export default function NewVideoPage() {
           <div>
             <label
               htmlFor="price"
-              className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+              className="block text-sm font-medium text-black"
             >
               Price (₦) *
             </label>
@@ -203,7 +203,7 @@ export default function NewVideoPage() {
               step="0.01"
               value={price}
               onChange={(e) => setPrice(e.target.value)}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-900 dark:text-white"
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-black focus:border-black bg-white text-black"
               placeholder="e.g., 5000"
             />
           </div>
@@ -211,7 +211,7 @@ export default function NewVideoPage() {
           <div>
             <label
               htmlFor="category"
-              className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+              className="block text-sm font-medium text-black"
             >
               Category
             </label>
@@ -220,7 +220,7 @@ export default function NewVideoPage() {
               id="category"
               value={category}
               onChange={(e) => setCategory(e.target.value)}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-900 dark:text-white"
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-black focus:border-black bg-white text-black"
               placeholder="e.g., Beginner, Advanced"
             />
           </div>
@@ -228,7 +228,7 @@ export default function NewVideoPage() {
           <div>
             <label
               htmlFor="video"
-              className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+              className="block text-sm font-medium text-black"
             >
               Video File *
             </label>
@@ -238,16 +238,15 @@ export default function NewVideoPage() {
               accept="video/*"
               required
               onChange={(e) => setVideoFile(e.target.files?.[0] || null)}
-              className="mt-1 block w-full text-sm text-gray-500 dark:text-gray-400
+              className="mt-1 block w-full text-sm text-gray-500
                 file:mr-4 file:py-2 file:px-4
                 file:rounded-md file:border-0
                 file:text-sm file:font-semibold
-                file:bg-blue-50 file:text-blue-700
-                hover:file:bg-blue-100
-                dark:file:bg-blue-900/20 dark:file:text-blue-400"
+                file:bg-black file:text-white
+                hover:file:bg-gray-800"
             />
             {videoFile && (
-              <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+              <p className="mt-1 text-sm text-gray-500">
                 Selected: {videoFile.name} ({(videoFile.size / 1024 / 1024).toFixed(2)} MB)
               </p>
             )}
@@ -256,7 +255,7 @@ export default function NewVideoPage() {
           <div>
             <label
               htmlFor="thumbnail"
-              className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+              className="block text-sm font-medium text-black"
             >
               Thumbnail Image (Optional)
             </label>
@@ -265,16 +264,15 @@ export default function NewVideoPage() {
               id="thumbnail"
               accept="image/*"
               onChange={(e) => setThumbnailFile(e.target.files?.[0] || null)}
-              className="mt-1 block w-full text-sm text-gray-500 dark:text-gray-400
+              className="mt-1 block w-full text-sm text-gray-500
                 file:mr-4 file:py-2 file:px-4
                 file:rounded-md file:border-0
                 file:text-sm file:font-semibold
-                file:bg-blue-50 file:text-blue-700
-                hover:file:bg-blue-100
-                dark:file:bg-blue-900/20 dark:file:text-blue-400"
+                file:bg-black file:text-white
+                hover:file:bg-gray-800"
             />
             {thumbnailFile && (
-              <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+              <p className="mt-1 text-sm text-gray-500">
                 Selected: {thumbnailFile.name}
               </p>
             )}
@@ -284,14 +282,14 @@ export default function NewVideoPage() {
             <button
               type="button"
               onClick={() => router.back()}
-              className="px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-900 hover:bg-gray-50 dark:hover:bg-gray-800 focus:outline-none"
+              className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-black bg-white hover:bg-gray-50 focus:outline-none"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={uploading}
-              className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none disabled:bg-gray-400 disabled:cursor-not-allowed"
+              className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-black hover:bg-gray-800 focus:outline-none disabled:bg-gray-400 disabled:cursor-not-allowed"
             >
               {uploading ? 'Uploading...' : 'Create Video'}
             </button>

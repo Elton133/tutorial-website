@@ -22,9 +22,9 @@ export default function Card({
       transition={{ duration: 0.2, ease: "easeOut" }}
       className={`
         bg-white rounded-2xl shadow-sm 
-        hover:shadow-xl hover:shadow-blue-100/50
+        hover:shadow-lg
         transition-shadow cursor-pointer overflow-hidden
-        border border-gray-100/50
+        border border-gray-200
         ${className}
       `}
     >

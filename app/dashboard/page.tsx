@@ -43,11 +43,11 @@ export default async function DashboardPage() {
     .single();
 
 return (
-  <div className="min-h-screen flex bg-gray-50 dark:bg-gray-900">
+  <div className="min-h-screen flex bg-white">
     {/* SIDEBAR */}
-    <aside className="hidden md:block w-64 bg-white dark:bg-gray-800 border-r dark:border-gray-700">
+    <aside className="hidden md:block w-64 bg-white border-r border-gray-200">
       <div className="p-6">
-        <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-6">
+        <h2 className="text-xl font-bold text-black mb-6">
           Bouquet
         </h2>
 
@@ -63,8 +63,8 @@ return (
                 href={link.href}
                 className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
                   isActive
-                    ? "bg-purple-600 text-white"
-                    : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                    ? "bg-black text-white"
+                    : "text-gray-700 hover:bg-gray-100"
                 }`}
               >
                 <Icon className="w-5 h-5" />
@@ -76,7 +76,7 @@ return (
           <form action="/auth/signout" method="post">
             <button
               type="submit"
-              className="w-full flex items-center gap-3 px-4 py-3 mt-4 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+              className="w-full flex items-center gap-3 px-4 py-3 mt-4 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
             >
               <LogOut className="w-5 h-5" />
               <span>Logout</span>
@@ -89,15 +89,15 @@ return (
     {/* MAIN CONTENT */}
     <div className="flex-1">
       {/* Header */}
-      <header className="bg-white dark:bg-gray-800 shadow-sm sticky top-0 z-20">
+      <header className="bg-white shadow-sm sticky top-0 z-20 border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
-          <h1 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white">
+          <h1 className="text-xl md:text-2xl font-bold text-black">
             Dashboard
           </h1>
 
           <Link
             href="/"
-            className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 hover:text-gray-900 dark:hover:text-white"
+            className="px-4 py-2 text-sm font-medium text-gray-700 hover:text-black"
           >
             Browse Videos
           </Link>
@@ -107,23 +107,23 @@ return (
       {/* Page Content */}
       <div className="max-w-7xl mx-auto px-6 py-10 space-y-10">
         {/* User Info Card */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+          <h2 className="text-xl font-semibold text-black mb-4">
             Account Information
           </h2>
 
           <div className="space-y-2">
-            <p className="text-gray-600 dark:text-gray-400">
+            <p className="text-gray-600">
               <span className="font-medium">Email:</span> {user.email}
             </p>
 
             {profile?.full_name && (
-              <p className="text-gray-600 dark:text-gray-400">
+              <p className="text-gray-600">
                 <span className="font-medium">Name:</span> {profile.full_name}
               </p>
             )}
 
-            <p className="text-gray-600 dark:text-gray-400">
+            <p className="text-gray-600">
               <span className="font-medium">Role:</span>{" "}
               {profile?.is_admin ? "Administrator" : "User"}
             </p>
@@ -132,7 +132,7 @@ return (
 
         {/* Purchased Videos */}
         <div>
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
+          <h2 className="text-2xl font-bold text-black mb-6">
             My Purchased Videos
           </h2>
 
@@ -145,9 +145,9 @@ return (
                   <Link
                     key={purchase.id}
                     href={`/videos/${video.id}`}
-                    className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow"
+                    className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow"
                   >
-                    <div className="aspect-video bg-gray-200 dark:bg-gray-700 relative">
+                    <div className="aspect-video bg-gray-100 relative">
                       {video.thumbnail_url ? (
                         <Image
                           src={video.thumbnail_url}
@@ -163,20 +163,20 @@ return (
                     </div>
 
                     <div className="p-4">
-                      <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                      <h3 className="text-lg font-semibold text-black mb-2">
                         {video.title}
                       </h3>
 
-                      <p className="text-sm text-gray-600 dark:text-gray-400 mb-2 line-clamp-2">
+                      <p className="text-sm text-gray-600 mb-2 line-clamp-2">
                         {video.description}
                       </p>
 
                       <div className="flex justify-between items-center text-sm">
-                        <span className="text-green-600 dark:text-green-400 font-medium">
+                        <span className="text-green-600 font-medium">
                           Purchased
                         </span>
                         {video.duration && (
-                          <span className="text-gray-500 dark:text-gray-400">
+                          <span className="text-gray-500">
                             {Math.floor(video.duration / 60)} min
                           </span>
                         )}
@@ -187,16 +187,16 @@ return (
               })}
             </div>
           ) : (
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-12 text-center">
-              <h3 className="text-lg font-medium text-gray-900 dark:text-white">
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-12 text-center">
+              <h3 className="text-lg font-medium text-black">
                 No videos purchased yet
               </h3>
-              <p className="mt-2 text-gray-600 dark:text-gray-400">
-                Browse our collection to find videos you'd love to learn from.
+              <p className="mt-2 text-gray-600">
+                Browse our collection to find videos you&apos;d love to learn from.
               </p>
               <Link
                 href="/"
-                className="mt-6 inline-block px-6 py-3 bg-purple-600 text-white font-medium rounded-md hover:bg-purple-700"
+                className="mt-6 inline-block px-6 py-3 bg-black text-white font-medium rounded-md shadow-sm hover:bg-gray-800"
               >
                 Browse Videos
               </Link>
