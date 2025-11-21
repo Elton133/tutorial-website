@@ -61,6 +61,8 @@ export default function VideoPlayerPage({ videoId }: VideoPlayerProps) {
         .eq('id', videoId)
         .single();
 
+        console.log(videoData);
+
       if (videoError) throw videoError;
       setVideo(videoData);
 
@@ -182,12 +184,20 @@ export default function VideoPlayerPage({ videoId }: VideoPlayerProps) {
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
           <div className="aspect-video bg-black">
             {hasAccess ? (
-              <ReactPlayer
-                url={video.video_url}
-                controls
-                width="100%"
-                height="100%"
-              />
+              // <ReactPlayer
+              //   url={video.video_url}
+              //   controls
+              //   width="100%"
+              //   height="100%"
+              // />
+              <video
+          className="w-full h-full rounded-xl"
+          controls
+          autoPlay
+        >
+          <source src={video.video_url} type="video/mp4" />
+          Your browser does not support the video tag.
+        </video>
             ) : (
               <div className="h-full flex items-center justify-center">
                 <div className="text-center px-4">

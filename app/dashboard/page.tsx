@@ -192,7 +192,7 @@ return (
                 No videos purchased yet
               </h3>
               <p className="mt-2 text-gray-600">
-                Browse our collection to find videos you'd love to learn from.
+                Browse our collection to find videos you&apos;d love to learn from.
               </p>
               <Link
                 href="/"
