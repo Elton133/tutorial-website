@@ -5,9 +5,13 @@ import { useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
 import { createClient } from '@/lib/supabase/client';
 import { Video } from '@/lib/types';
+import type { ComponentType } from 'react';
 
 // Dynamically import ReactPlayer to avoid SSR issues
-const ReactPlayer = dynamic(() => import('react-player'), { ssr: false });
+const ReactPlayer = dynamic(() => import('react-player'), { 
+  ssr: false,
+  loading: () => <div className="w-full h-full flex items-center justify-center">Loading player...</div>
+}) as ComponentType<any>;
 
 interface VideoPlayerProps {
   videoId: string;
@@ -158,14 +162,6 @@ export default function VideoPlayerPage({ videoId }: VideoPlayerProps) {
                 controls
                 width="100%"
                 height="100%"
-                config={{
-                  file: {
-                    attributes: {
-                      controlsList: 'nodownload',
-                      disablePictureInPicture: true,
-                    },
-                  },
-                }}
               />
             ) : (
               <div className="h-full flex items-center justify-center">
