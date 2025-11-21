@@ -9,10 +9,11 @@ import { PaystackVerificationResponse } from '@/lib/types';
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
   const reference = searchParams.get('reference');
+  const origin = request.nextUrl.origin;
 
   if (!reference) {
     return NextResponse.redirect(
-      new URL('/dashboard?error=invalid_reference', process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000')
+      new URL('/dashboard?error=invalid_reference', origin)
     );
   }
 
@@ -33,7 +34,7 @@ export async function GET(request: NextRequest) {
 
     if (!paystackData.status || paystackData.data.status !== 'success') {
       return NextResponse.redirect(
-        new URL('/dashboard?error=payment_failed', process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000')
+        new URL('/dashboard?error=payment_failed', origin)
       );
     }
 
@@ -47,7 +48,7 @@ export async function GET(request: NextRequest) {
     if (updateError) {
       console.error('Error updating purchase:', updateError);
       return NextResponse.redirect(
-        new URL('/dashboard?error=database_error', process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000')
+        new URL('/dashboard?error=database_error', origin)
       );
     }
 
@@ -55,17 +56,17 @@ export async function GET(request: NextRequest) {
     const videoId = paystackData.data.metadata?.video_id;
     if (videoId) {
       return NextResponse.redirect(
-        new URL(`/videos/${videoId}?payment=success`, process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000')
+        new URL(`/videos/${videoId}?payment=success`, origin)
       );
     }
 
     return NextResponse.redirect(
-      new URL('/dashboard?payment=success', process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000')
+      new URL('/dashboard?payment=success', origin)
     );
   } catch (error) {
     console.error('Payment verification error:', error);
     return NextResponse.redirect(
-      new URL('/dashboard?error=verification_failed', process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000')
+      new URL('/dashboard?error=verification_failed', origin)
     );
   }
 }
