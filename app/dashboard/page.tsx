@@ -10,7 +10,7 @@ export default async function DashboardPage() {
 
   const sidebarLinks = [
   { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-  { label: "My Videos", href: "/videos", icon: VideoIcon },
+  { label: "My Videos", href: "/dashboard/my-videos", icon: VideoIcon },
   { label: "Profile", href: "/dashboard/profile", icon: User },
 ];
 
