@@ -88,7 +88,7 @@ export async function POST(request: NextRequest) {
             video_id,
             user_id: user.id,
           },
-          callback_url: `${process.env.NEXT_PUBLIC_APP_URL}/api/payment/verify?reference=${reference}`,
+          callback_url: `${process.env.NEXT_PUBLIC_APP_URL}/api/payment/verify`,
         }),
       }
     );
