@@ -11,6 +11,8 @@ export async function POST(request: NextRequest) {
     const body = await request.text();
     const signature = request.headers.get('x-paystack-signature');
 
+    console.log('Webhook received, signature present:', !!signature);
+
     // Verify webhook signature
     const hash = crypto
       .createHmac('sha512', process.env.PAYSTACK_SECRET_KEY!)
@@ -18,10 +20,12 @@ export async function POST(request: NextRequest) {
       .digest('hex');
 
     if (hash !== signature) {
+      console.error('Webhook signature mismatch');
       return NextResponse.json({ error: 'Invalid signature' }, { status: 400 });
     }
 
     const event = JSON.parse(body);
+    console.log('Webhook event received:', event.event, 'reference:', event.data?.reference);
 
     // Handle successful charge
     if (event.event === 'charge.success') {
@@ -47,6 +51,8 @@ export async function POST(request: NextRequest) {
             { status: 500 }
           );
         }
+
+        console.log('Webhook: Purchase updated successfully for reference:', reference);
       }
     }
 

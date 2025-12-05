@@ -47,6 +47,8 @@ export async function POST(request: NextRequest) {
     // Generate unique reference
     const reference = `TXN_${Date.now()}_${user.id.slice(0, 8)}`;
 
+    console.log('Initializing payment for user:', user.id, 'video:', video_id, 'reference:', reference);
+
     // Create pending purchase record
     const { error: purchaseError } = await supabase.from('purchases').insert({
       user_id: user.id,
@@ -70,6 +72,8 @@ export async function POST(request: NextRequest) {
         { status: 500 }
       );
     }
+
+    console.log('Purchase record created successfully with reference:', reference);
 
     // Initialize Paystack payment
     const paystackResponse = await fetch(
