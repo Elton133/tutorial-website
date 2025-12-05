@@ -3,6 +3,16 @@ import { createClient as createServiceClient } from '@supabase/supabase-js';
 import { PaystackVerificationResponse } from '@/lib/types';
 
 /**
+ * Helper function to create success redirect URL
+ */
+function createSuccessRedirectUrl(origin: string, videoId?: string): URL {
+  if (videoId) {
+    return new URL(`/videos/${videoId}?payment=success`, origin);
+  }
+  return new URL('/dashboard?payment=success', origin);
+}
+
+/**
  * Verify Paystack payment after user is redirected back
  * Updates purchase status and redirects to appropriate page
  */
@@ -49,10 +59,40 @@ export async function GET(request: NextRequest) {
     }
 
     // Update purchase status in database using service role to bypass RLS
+    if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
+      console.error('Missing Supabase environment variables');
+      return NextResponse.redirect(
+        new URL('/dashboard?error=configuration_error', origin)
+      );
+    }
+    
     const supabase = createServiceClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!
+      process.env.NEXT_PUBLIC_SUPABASE_URL,
+      process.env.SUPABASE_SERVICE_ROLE_KEY
     );
+    
+    // First check if purchase exists
+    const { data: existingPurchase, error: fetchError } = await supabase
+      .from('purchases')
+      .select('payment_status')
+      .eq('paystack_reference', reference)
+      .single();
+    
+    if (fetchError) {
+      console.error('Error fetching purchase:', fetchError);
+      return NextResponse.redirect(
+        new URL('/dashboard?error=purchase_not_found', origin)
+      );
+    }
+    
+    // If already successful, just redirect (idempotency)
+    if (existingPurchase.payment_status === 'success') {
+      console.log('Purchase already marked as successful, redirecting');
+      const videoId = paystackData.data.metadata?.video_id;
+      return NextResponse.redirect(createSuccessRedirectUrl(origin, videoId));
+    }
+    
+    // Update purchase status
     const { error: updateError } = await supabase
       .from('purchases')
       .update({ payment_status: 'success' })
@@ -67,17 +107,9 @@ export async function GET(request: NextRequest) {
 
     console.log('Purchase status updated successfully for reference:', reference);
 
-    // Redirect to video page
+    // Redirect to video page or dashboard
     const videoId = paystackData.data.metadata?.video_id;
-    if (videoId) {
-      return NextResponse.redirect(
-        new URL(`/videos/${videoId}?payment=success`, origin)
-      );
-    }
-
-    return NextResponse.redirect(
-      new URL('/dashboard?payment=success', origin)
-    );
+    return NextResponse.redirect(createSuccessRedirectUrl(origin, videoId));
   } catch (error) {
     console.error('Payment verification error:', error);
     return NextResponse.redirect(
