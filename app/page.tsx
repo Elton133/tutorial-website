@@ -71,7 +71,7 @@ export default async function Home() {
                     </p>
                     <div className="flex justify-between items-center pt-4 border-t border-gray-200">
                       <span className="text-2xl font-bold text-black">
-                        ₦{(video.price / 100).toLocaleString()}
+                        GH$ {(video.price / 100).toLocaleString()}
                       </span>
                       {video.duration && (
                         <span className="text-sm text-gray-500 bg-gray-100 px-3 py-1 rounded-full">
