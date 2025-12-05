@@ -193,7 +193,7 @@ export default function NewVideoPage() {
               htmlFor="price"
               className="block text-sm font-medium text-black"
             >
-              Price (₦) *
+              Price (GH$) *
             </label>
             <input
               type="number"

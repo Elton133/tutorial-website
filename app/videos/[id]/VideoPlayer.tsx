@@ -237,7 +237,7 @@ export default function VideoPlayerPage({ videoId }: VideoPlayerProps) {
             <div className="flex items-center justify-between mb-6">
               <div>
                 <span className="text-3xl font-bold text-black">
-                  ₦{(video.price / 100).toLocaleString()}
+                  GH$ {(video.price / 100).toLocaleString()}
                 </span>
                 {video.duration && (
                   <span className="ml-4 text-sm text-gray-500">

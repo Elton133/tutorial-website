@@ -80,7 +80,7 @@ export default function LoginPage() {
         >
           {/* Brand Logo minimal */}
           <Link href="/">
-            <h1 className="text-2xl font-bold tracking-tight mb-10">
+            <h1 className="text-2xl text-black font-bold tracking-tight mb-10">
               Bouquet
             </h1>
           </Link>

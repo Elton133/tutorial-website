@@ -110,7 +110,7 @@ export default async function AdminPage() {
               Total Revenue
             </h3>
             <p className="mt-2 text-3xl font-bold text-black">
-              ₦{(totalRevenue / 100).toLocaleString()}
+              GH$ {(totalRevenue / 100).toLocaleString()}
             </p>
           </div>
         </div>
@@ -156,7 +156,7 @@ export default async function AdminPage() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm text-black">
-                        ₦{(video.price / 100).toLocaleString()}
+                        GH$ {(video.price / 100).toLocaleString()}
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
@@ -220,7 +220,7 @@ export default async function AdminPage() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm text-black">
-                        ₦{(purchase.amount_paid / 100).toLocaleString()}
+                        GH$ {(purchase.amount_paid / 100).toLocaleString()}
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">

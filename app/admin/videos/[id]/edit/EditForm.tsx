@@ -239,7 +239,7 @@ export default function EditVideoPage({ videoId }: EditVideoProps) {
               htmlFor="price"
               className="block text-sm font-medium text-black"
             >
-              Price (₦) *
+              Price (GH$) *
             </label>
             <input
               type="number"
