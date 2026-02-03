@@ -26,7 +26,6 @@ CREATE TABLE IF NOT EXISTS public.videos (
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
--- Create purchases table
 CREATE TABLE IF NOT EXISTS public.purchases (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
@@ -141,6 +140,41 @@ CREATE INDEX IF NOT EXISTS idx_purchases_video_id ON public.purchases(video_id);
 CREATE INDEX IF NOT EXISTS idx_purchases_reference ON public.purchases(paystack_reference);
 CREATE INDEX IF NOT EXISTS idx_videos_created_at ON public.videos(created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_profiles_is_admin ON public.profiles(is_admin);
+
+-- Subscriptions table for monthly access
+CREATE TABLE IF NOT EXISTS public.subscriptions (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  status TEXT NOT NULL CHECK (status IN ('active', 'canceled', 'past_due')),
+  paystack_customer_id TEXT,
+  paystack_subscription_code TEXT,
+  plan_code TEXT NOT NULL,
+  current_period_start TIMESTAMP WITH TIME ZONE,
+  current_period_end TIMESTAMP WITH TIME ZONE,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  UNIQUE (user_id, plan_code)
+);
+
+-- RLS for subscriptions
+ALTER TABLE public.subscriptions ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Users can view own subscriptions" ON public.subscriptions
+  FOR SELECT USING (auth.uid() = user_id);
+
+CREATE POLICY "Admins can view all subscriptions" ON public.subscriptions
+  FOR SELECT USING (
+    EXISTS (
+      SELECT 1 FROM public.profiles
+      WHERE profiles.id = auth.uid() AND profiles.is_admin = true
+    )
+  );
+
+-- updated_at trigger for subscriptions
+DROP TRIGGER IF EXISTS handle_subscriptions_updated_at ON public.subscriptions;
+CREATE TRIGGER handle_subscriptions_updated_at
+  BEFORE UPDATE ON public.subscriptions
+  FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
 
 -- Create storage bucket for videos
 INSERT INTO storage.buckets (id, name, public)

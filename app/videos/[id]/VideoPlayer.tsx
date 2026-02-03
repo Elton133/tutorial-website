@@ -59,19 +59,31 @@ export default function VideoPlayerPage({ videoId }: VideoPlayerProps) {
         .from('videos')
         .select('*')
         .eq('id', videoId)
-        .single();
+        .maybeSingle();
 
-        console.log(videoData);
+      console.log('Video query result:', { videoId, videoData, videoError });
 
-      if (videoError) throw videoError;
+      if (videoError) {
+        console.error('Video query error:', videoError);
+        throw new Error(`Failed to load video: ${videoError.message}`);
+      }
+
+      if (!videoData) {
+        throw new Error(`Video not found with ID: ${videoId}`);
+      }
+
       setVideo(videoData);
 
       // Check if user is admin
-      const { data: profile } = await supabase
+      const { data: profile, error: profileError } = await supabase
         .from('profiles')
         .select('is_admin')
         .eq('id', user.id)
-        .single();
+        .maybeSingle();
+
+      if (profileError) {
+        console.error('Profile query error:', profileError);
+      }
 
       // Admins have access to all videos
       if (profile?.is_admin) {
@@ -80,14 +92,29 @@ export default function VideoPlayerPage({ videoId }: VideoPlayerProps) {
         return;
       }
 
-      // Check if user has purchased this video
+      // Check if user has an active subscription
+      const nowIso = new Date().toISOString();
+      const { data: subscription } = await supabase
+        .from('subscriptions')
+        .select('*')
+        .eq('user_id', user.id)
+        .eq('status', 'active')
+        .gte('current_period_end', nowIso)
+        .maybeSingle();
+
+      if (subscription) {
+        setHasAccess(true);
+        return;
+      }
+
+      // Fallback: if you previously sold one-off purchases, still honour them
       const { data: purchase } = await supabase
         .from('purchases')
         .select('*')
         .eq('user_id', user.id)
         .eq('video_id', videoId)
         .eq('payment_status', 'success')
-        .single();
+        .maybeSingle();
 
       setHasAccess(!!purchase);
     } catch (error: unknown) {
@@ -100,7 +127,7 @@ export default function VideoPlayerPage({ videoId }: VideoPlayerProps) {
     }
   };
 
-  const handlePayment = async () => {
+  const handleSubscribe = async () => {
     if (!video) return;
 
     setPaying(true);
@@ -116,15 +143,13 @@ export default function VideoPlayerPage({ videoId }: VideoPlayerProps) {
         return;
       }
 
-      // Initialize payment with Paystack
-      const response = await fetch('/api/payment/initialize', {
+      // Initialize monthly subscription with Paystack
+      const response = await fetch('/api/subscription/initialize', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          video_id: video.id,
-          amount: video.price,
           email: user.email,
         }),
       });
@@ -132,7 +157,9 @@ export default function VideoPlayerPage({ videoId }: VideoPlayerProps) {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || 'Payment initialization failed');
+        console.error('Subscription initialization failed:', data);
+        const errorMessage = data.error || 'Subscription initialization failed';
+        throw new Error(errorMessage);
       }
 
       // Redirect to Paystack payment page
@@ -140,11 +167,11 @@ export default function VideoPlayerPage({ videoId }: VideoPlayerProps) {
         window.location.href = data.authorization_url;
       }
     } catch (error: unknown) {
-      console.error('Payment error:', error);
+      console.error('Subscription error:', error);
       if (error instanceof Error) {
         setError(error.message);
       } else {
-        setError('An error occurred while processing payment');
+        setError('An error occurred while starting your subscription');
       }
       setPaying(false);
     }
@@ -164,14 +191,26 @@ export default function VideoPlayerPage({ videoId }: VideoPlayerProps) {
   if (error || !video) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-white">
-        <div className="text-center">
-          <p className="text-red-600">{error || 'Video not found'}</p>
-          <button
-            onClick={() => router.push('/')}
-            className="mt-4 px-4 py-2 bg-black text-white rounded-md shadow-sm hover:bg-gray-800"
-          >
-            Go Back
-          </button>
+        <div className="text-center max-w-md px-4">
+          <h2 className="text-2xl font-bold text-black mb-4">Video Not Found</h2>
+          <p className="text-red-600 mb-2">{error || 'The video you are looking for does not exist.'}</p>
+          <p className="text-gray-600 text-sm mb-6">
+            Video ID: <code className="bg-gray-100 px-2 py-1 rounded">{videoId}</code>
+          </p>
+          <div className="flex gap-4 justify-center">
+            <button
+              onClick={() => router.push('/')}
+              className="px-4 py-2 bg-black text-white rounded-md shadow-sm hover:bg-gray-800"
+            >
+              Browse Videos
+            </button>
+            <button
+              onClick={() => router.back()}
+              className="px-4 py-2 border border-gray-300 text-gray-700 rounded-md shadow-sm hover:bg-gray-50"
+            >
+              Go Back
+            </button>
+          </div>
         </div>
       </div>
     );
@@ -215,10 +254,10 @@ export default function VideoPlayerPage({ videoId }: VideoPlayerProps) {
                     />
                   </svg>
                   <h3 className="mt-4 text-xl font-semibold text-white">
-                    Purchase Required
+                    Subscription Required
                   </h3>
                   <p className="mt-2 text-gray-300">
-                    You need to purchase this video to watch it
+                    You need an active subscription to watch this video
                   </p>
                 </div>
               </div>
@@ -237,7 +276,7 @@ export default function VideoPlayerPage({ videoId }: VideoPlayerProps) {
             <div className="flex items-center justify-between mb-6">
               <div>
                 <span className="text-3xl font-bold text-black">
-                  ₦{(video.price / 100).toLocaleString()}
+                  GH$ {(video.price / 100).toLocaleString()}
                 </span>
                 {video.duration && (
                   <span className="ml-4 text-sm text-gray-500">
@@ -247,11 +286,11 @@ export default function VideoPlayerPage({ videoId }: VideoPlayerProps) {
               </div>
               {!hasAccess && (
                 <button
-                  onClick={handlePayment}
+                  onClick={handleSubscribe}
                   disabled={paying}
                   className="px-6 py-3 bg-black text-white font-semibold rounded-md shadow-sm hover:bg-gray-800 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
                 >
-                  {paying ? 'Processing...' : 'Purchase Now'}
+                  {paying ? 'Processing...' : 'Start Monthly Subscription'}
                 </button>
               )}
             </div>

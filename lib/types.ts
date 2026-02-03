@@ -35,6 +35,19 @@ export interface Purchase {
   updated_at: string;
 }
 
+export interface Subscription {
+  id: string;
+  user_id: string;
+  status: 'active' | 'canceled' | 'past_due';
+  paystack_customer_id?: string;
+  paystack_subscription_code?: string;
+  plan_code: string;
+  current_period_start: string | null;
+  current_period_end: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
 export interface Profile {
   id: string;
   user_id: string;
@@ -68,8 +81,31 @@ export interface PaystackVerificationResponse {
       email: string;
     };
     metadata?: {
-      video_id: string;
-      user_id: string;
+      video_id?: string;
+      user_id?: string;
+      subscription?: boolean;
+    };
+  };
+}
+
+export interface PaystackSubscriptionEvent {
+  event: string;
+  data: {
+    customer: {
+      email: string;
+      customer_code: string;
+    };
+    subscription_code: string;
+    status: 'active' | 'completed' | 'canceled';
+    plan: {
+      plan_code: string;
+      interval: string;
+    };
+    next_payment_date?: string | null;
+    createdAt?: string;
+    metadata?: {
+      user_id?: string;
+      subscription?: boolean;
     };
   };
 }

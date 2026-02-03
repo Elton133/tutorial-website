@@ -40,11 +40,16 @@ export default function NewVideoPage() {
       } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
-      const { data: profile } = await supabase
+      const { data: profile, error: profileError } = await supabase
         .from('profiles')
         .select('is_admin')
         .eq('id', user.id)
-        .single();
+        .maybeSingle();
+
+      if (profileError) {
+        console.error('Profile query error:', profileError);
+        throw new Error('Failed to verify admin status');
+      }
 
       if (!profile?.is_admin) {
         throw new Error('Unauthorized - Admin access required');
@@ -193,7 +198,7 @@ export default function NewVideoPage() {
               htmlFor="price"
               className="block text-sm font-medium text-black"
             >
-              Price (₦) *
+              Price (GH$) *
             </label>
             <input
               type="number"

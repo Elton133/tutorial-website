@@ -11,6 +11,8 @@ export async function POST(request: NextRequest) {
     const body = await request.text();
     const signature = request.headers.get('x-paystack-signature');
 
+    console.log('Webhook received, signature present:', !!signature);
+
     // Verify webhook signature
     const hash = crypto
       .createHmac('sha512', process.env.PAYSTACK_SECRET_KEY!)
@@ -18,12 +20,19 @@ export async function POST(request: NextRequest) {
       .digest('hex');
 
     if (hash !== signature) {
+      console.error('Webhook signature mismatch');
       return NextResponse.json({ error: 'Invalid signature' }, { status: 400 });
     }
 
     const event = JSON.parse(body);
+    console.log(
+      'Webhook event received:',
+      event.event,
+      'reference:',
+      event.data?.reference
+    );
 
-    // Handle successful charge
+    // Handle successful one-time charges for video purchases
     if (event.event === 'charge.success') {
       const { reference, status } = event.data;
 
@@ -33,6 +42,29 @@ export async function POST(request: NextRequest) {
           process.env.NEXT_PUBLIC_SUPABASE_URL!,
           process.env.SUPABASE_SERVICE_ROLE_KEY!
         );
+
+        // Check current purchase status first (idempotent)
+        const { data: purchase, error: fetchError } = await supabase
+          .from('purchases')
+          .select('payment_status')
+          .eq('paystack_reference', reference)
+          .single();
+
+        if (fetchError) {
+          console.error('Error fetching purchase for webhook:', fetchError);
+          return NextResponse.json(
+            { error: 'Purchase not found' },
+            { status: 404 }
+          );
+        }
+
+        if (purchase.payment_status === 'success') {
+          console.log(
+            'Webhook: purchase already marked as success for reference:',
+            reference
+          );
+          return NextResponse.json({ received: true });
+        }
 
         // Update purchase status
         const { error: updateError } = await supabase
@@ -47,6 +79,11 @@ export async function POST(request: NextRequest) {
             { status: 500 }
           );
         }
+
+        console.log(
+          'Webhook: Purchase updated successfully for reference:',
+          reference
+        );
       }
     }
 

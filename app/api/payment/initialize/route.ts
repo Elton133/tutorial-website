@@ -3,15 +3,16 @@ import { createClient } from '@/lib/supabase/server';
 import { PaystackPaymentResponse } from '@/lib/types';
 
 /**
- * Initialize Paystack payment
- * Creates a payment transaction and returns authorization URL
+ * Initialize Paystack payment for a single video purchase.
+ * NOTE: This flow is kept for backwards compatibility, but
+ * the recommended approach is to use subscriptions instead.
  */
 export async function POST(request: NextRequest) {
   try {
-    const { video_id, amount, email } = await request.json();
+    const { video_id, email } = await request.json();
 
-    // Validate input
-    if (!video_id || !amount || !email) {
+    // Validate input (amount is derived from DB, not trusted from client)
+    if (!video_id || !email) {
       return NextResponse.json(
         { error: 'Missing required fields' },
         { status: 400 }
@@ -26,6 +27,30 @@ export async function POST(request: NextRequest) {
 
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    // Look up video and derive price on the server
+    const { data: video, error: videoError } = await supabase
+      .from('videos')
+      .select('id, price')
+      .eq('id', video_id)
+      .single();
+
+    if (videoError || !video) {
+      console.error('Video lookup failed during payment init:', videoError);
+      return NextResponse.json(
+        { error: 'Video not found' },
+        { status: 404 }
+      );
+    }
+
+    const amount = video.price;
+
+    if (!amount || amount <= 0) {
+      return NextResponse.json(
+        { error: 'Invalid video price configured' },
+        { status: 400 }
+      );
     }
 
     // Check if user has already purchased this video
@@ -47,6 +72,15 @@ export async function POST(request: NextRequest) {
     // Generate unique reference
     const reference = `TXN_${Date.now()}_${user.id.slice(0, 8)}`;
 
+    console.log(
+      'Initializing payment for user:',
+      user.id,
+      'video:',
+      video_id,
+      'reference:',
+      reference
+    );
+
     // Create pending purchase record
     const { error: purchaseError } = await supabase.from('purchases').insert({
       user_id: user.id,
@@ -59,7 +93,7 @@ export async function POST(request: NextRequest) {
     if (purchaseError) {
       console.error('Error creating purchase:', purchaseError);
       // Check if it's a duplicate key error
-      if (purchaseError.code === '23505') {
+      if ((purchaseError as { code?: string }).code === '23505') {
         return NextResponse.json(
           { error: 'You have already purchased this video' },
           { status: 400 }
@@ -70,6 +104,11 @@ export async function POST(request: NextRequest) {
         { status: 500 }
       );
     }
+
+    console.log(
+      'Purchase record created successfully with reference:',
+      reference
+    );
 
     // Initialize Paystack payment
     const paystackResponse = await fetch(
@@ -88,7 +127,7 @@ export async function POST(request: NextRequest) {
             video_id,
             user_id: user.id,
           },
-          callback_url: `${process.env.NEXT_PUBLIC_APP_URL}/api/payment/verify?reference=${reference}`,
+          callback_url: `${process.env.NEXT_PUBLIC_APP_URL}/api/payment/verify`,
         }),
       }
     );
