@@ -25,12 +25,7 @@ export async function POST(request: NextRequest) {
     }
 
     const event = JSON.parse(body);
-    console.log(
-      'Webhook event received:',
-      event.event,
-      'reference:',
-      event.data?.reference
-    );
+    console.log('Webhook event received:', event.event, 'reference:', event.data?.reference);
 
     // Handle successful one-time charges for video purchases
     if (event.event === 'charge.success') {
@@ -80,10 +75,7 @@ export async function POST(request: NextRequest) {
           );
         }
 
-        console.log(
-          'Webhook: Purchase updated successfully for reference:',
-          reference
-        );
+        console.log('Webhook: Purchase updated successfully for reference:', reference);
       }
     }
 
